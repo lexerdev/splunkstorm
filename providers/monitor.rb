@@ -15,15 +15,43 @@
 #
 
 def already_monitors_path?(file, path)
-  open("#{node['splunkstorm']['forwarder_home']}/etc/apps/search/local/inputs.conf") { |f| f.grep(/[monitor:\/\/#{new_resource.path}]/) }
+  status = false
+  open("#{node['splunkstorm']['forwarder_home']}/etc/apps/search/local/inputs.conf") do |f|
+    
+    Chef::Log.info "FILE CONTENTS: ---------------"
+    Chef::Log.info "#{f}"
+    Chef::Log.info "------------------------------"
+    Chef::Log.info f.grep(/[monitor:\/\/#{new_resource.path}]/)
+    Chef::Log.info "--------------- :FILE CONTENTS"
+    
+    puts "FILE CONTENTS: ---------------"
+    puts "#{f}"
+    puts "------------------------------"
+    puts f.grep(/[monitor:\/\/#{new_resource.path}]/)
+    puts "--------------- :FILE CONTENTS"
+    
+    if f.grep(/[monitor:\/\/#{new_resource.path}]/)
+      status = true
+      break
+    end
+  end
+  
+  status
 end
 
 action :add do
+  Chef::Log.info "AAAAAA"
+  already_monitors_path?("#{node['splunkstorm']['forwarder_home']}/etc/apps/search/local/inputs.conf", new_resource.path)
+  
   if !already_monitors_path?("#{node['splunkstorm']['forwarder_home']}/etc/apps/search/local/inputs.conf", new_resource.path)
+    Chef::Log.info "BBBBBB"
     execute "splunk add monitor #{new_resource.path}" do
+      Chef::Log.info "CCCCCC"
       action :run
     end
+    Chef::Log.info "DDDDDD"
   end
+  Chef::Log.info "EEEEEE"
 end
 
 action :remove do
