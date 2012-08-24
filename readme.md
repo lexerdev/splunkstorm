@@ -78,7 +78,6 @@ See `attributes/default.rb` for default values.
 * `node['splunkstorm']['cookbook_name']` - The name of the directory in which the cookbook runs.
 * `node['splunkstorm']['forwarder_home']` - The directory in which to install the Splunk Forwarder
 * `node['splunkstorm']['auth']` - The default admin password to use instead of splunks "changeme"
-
 * `node['splunkstorm']['forwarder_root']` - The base URL that splunk uses to download release files for Splunk Forwarder
 * `node['splunkstorm']['forwarder_version']` - The specific version of Splunk Forwarder to download
 * `node['splunkstorm']['forwarder_build]` - The specific build number of Splunk Forwarder to download
