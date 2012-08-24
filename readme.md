@@ -3,6 +3,50 @@ Description
 
 This little Chef Cookbook provides recipes and definitions to install Splunk Forwarders and setup monitors for Splunk Storm.
 
+As you know, Splunk Storm uses a proprietary credentials file to setup access to the Splunk Storm servers/account.
+You probably won't want to have this file floating around in your cookbook unencrypted, so we're going to stuff the contents of the credentials file into a Secure Databag.
+
+To do that, you'll need to:
+
+1. Create the data bag using knife (or whatever process you usually take)
+        
+        knife data bag create licenses storm --secret-file ~/.chef/encrypted_data_bag_secret
+2. Open `irb` and run the following script (make sure you update the variables to suit your setup)
+        
+        require 'base64'
+        require 'chef'
+        
+        data_bag     = "licenses"
+        data_bag_key = "storm"
+        license_file = "stormforwarder_XXXXXXXX.spl"
+        
+        Chef::Config.from_file("#{ENV['HOME']}/.chef/knife.rb")
+        c = Chef::DataBagItem.load(data_bag, data_bag_key)
+        
+        contents = [File.open(license_file, "rb") {|io| io.read}].pack("m")
+        c['data'] = contents
+        c['filename'] = license_file
+        
+        c.save
+3. You'll probably want to check-in your databag into your SCM
+        
+        knife data bag show licenses storm -Fj > data_bags/licenses/storm.json
+
+If you need to get the credentials out of the databag and into an actual file (note: the cookbook takes care of this for you), you can run this command in `irb`
+    
+    require 'base64'
+    require 'chef'
+    
+    data_bag     = "licenses"
+    data_bag_key = "storm"
+    
+    Chef::Config.from_file("#{ENV['HOME']}/.chef/knife.rb")
+    c = Chef::DataBagItem.load(data_bag, data_bag_key)
+    
+    File.open(c['filename'], "wb") do |file|
+      file.write(c['data'].unpack('m').first)
+    end
+
 
 Changes
 =======
@@ -62,7 +106,22 @@ This will install the Splunk Forwarder:
 Resources and Providers
 =======================
 
-_TODO_
+To add and remove monitors you can use the `splunkstorm_monitor` provider:
+    
+    include_recipe "splunkstorm"
+    
+    # monitor the log directory in Splunk Storm
+    splunkstorm_monitor "/var/log" do
+      path "/var/log/*.log"
+      action :add
+    end
+    
+    # remove the log directory monitor in Splunk Storm
+    splunkstorm_monitor "/var/log" do
+      path "/var/log/*.log"
+      action :remove
+    end
+
 
 
 License and Author

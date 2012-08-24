@@ -14,49 +14,30 @@
 # limitations under the License.
 #
 
-def already_monitors_path?(file, path)
+def input_path
+  "#{node['splunkstorm']['forwarder_home']}/etc/apps/search/local/inputs.conf"
+end
+
+def already_monitors_path?(path)
   status = false
-  open("#{node['splunkstorm']['forwarder_home']}/etc/apps/search/local/inputs.conf") do |f|
-    
-    Chef::Log.info "FILE CONTENTS: ---------------"
-    Chef::Log.info "#{f}"
-    Chef::Log.info "------------------------------"
-    Chef::Log.info f.grep(/[monitor:\/\/#{new_resource.path}]/)
-    Chef::Log.info "--------------- :FILE CONTENTS"
-    
-    puts "FILE CONTENTS: ---------------"
-    puts "#{f}"
-    puts "------------------------------"
-    puts f.grep(/[monitor:\/\/#{new_resource.path}]/)
-    puts "--------------- :FILE CONTENTS"
-    
-    if f.grep(/[monitor:\/\/#{new_resource.path}]/)
-      status = true
-      break
-    end
+  if FileTest.exists?(input_path()) && IO.read(input_path()) =~ /[monitor:\/\/#{new_resource.path}]/
+    status = true
   end
   
   status
 end
 
 action :add do
-  Chef::Log.info "AAAAAA"
-  already_monitors_path?("#{node['splunkstorm']['forwarder_home']}/etc/apps/search/local/inputs.conf", new_resource.path)
-  
-  if !already_monitors_path?("#{node['splunkstorm']['forwarder_home']}/etc/apps/search/local/inputs.conf", new_resource.path)
-    Chef::Log.info "BBBBBB"
-    execute "splunk add monitor #{new_resource.path}" do
-      Chef::Log.info "CCCCCC"
+  if !already_monitors_path?(new_resource.path)
+    execute "#{node['splunkstorm']['forwarder_home']}/bin/splunk add monitor #{new_resource.path}" do
       action :run
     end
-    Chef::Log.info "DDDDDD"
   end
-  Chef::Log.info "EEEEEE"
 end
 
 action :remove do
-  if already_monitors_path?("#{node['splunkstorm']['forwarder_home']}/etc/apps/search/local/inputs.conf", new_resource.path)
-    execute "splunk remove monitor #{new_resource.path}" do
+  if already_monitors_path?(new_resource.path)
+    execute "#{node['splunkstorm']['forwarder_home']}/bin/splunk remove monitor #{new_resource.path}" do
       action :run
     end
   end
