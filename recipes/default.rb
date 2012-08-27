@@ -92,16 +92,16 @@ bash "fix license" do
   EOH
 end
 
-execute "#{splunk_cmd} install app #{node['splunkstorm']['forwarder_home']}/#{license_details['filename']} -auth admin:changeme" do
-  not_if do
-    File.exists?("/opt/splunk_setup_license")
-  end
-end
-
 splunk_password = node['splunkstorm']['auth'].split(':')[1]
 execute "#{splunk_cmd} edit user admin -password #{splunk_password} -roles admin -auth admin:changeme && echo true > /opt/splunk_setup_passwd" do
   not_if do
     File.exists?("/opt/splunk_setup_passwd")
+  end
+end
+
+execute "#{splunk_cmd} install app #{node['splunkstorm']['forwarder_home']}/#{license_details['filename']} -auth #{node['splunkstorm']['auth']} && echo true > /opt/splunk_setup_license" do
+  not_if do
+    File.exists?("/opt/splunk_setup_license")
   end
 end
 
