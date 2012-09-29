@@ -20,8 +20,10 @@ end
 
 def already_monitors_path?(path)
   status = false
-  if FileTest.exists?(input_path()) && IO.read(input_path()) =~ /[monitor:\/\/#{new_resource.path}]/
-    status = true
+  if FileTest.exists?(input_path())
+    if IO.read(input_path()) =~ /[monitor:\/\/#{Regexp.escape(path)}]/
+      status = true
+    end
   end
   
   status
