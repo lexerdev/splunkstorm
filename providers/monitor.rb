@@ -21,7 +21,7 @@ end
 def already_monitors_path?(path)
   status = false
   if FileTest.exists?(input_path())
-    if IO.read(input_path()) =~ /[monitor:\/\/#{Regexp.escape(path)}]/
+    if IO.read(input_path()) =~ /\[monitor\:\/\/#{Regexp.escape(path)}\]/
       status = true
     end
   end
