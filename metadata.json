@@ -1,0 +1,34 @@
+{
+  "name": "splunkstorm",
+  "description": "Installs/Configures Splunk Storm forwarders",
+  "long_description": "Description\n===========\n\nThis little Chef Cookbook provides recipes and definitions to install Splunk Forwarders and setup monitors for Splunk Storm.\n\nAs you know, Splunk Storm uses a proprietary credentials file to setup access to the Splunk Storm servers/account.\nYou probably won't want to have this file floating around in your cookbook unencrypted, so we're going to stuff the contents of the credentials file into a Secure Databag.\n\nTo do that, you'll need to:\n\n1. Create the data bag using knife (or whatever process you usually take)\n        \n        knife data bag create licenses storm --secret-file ~/.chef/encrypted_data_bag_secret\n2. Open `irb` and run the following script (make sure you update the variables to suit your setup)\n        \n        require 'base64'\n        require 'chef'\n        \n        data_bag     = \"licenses\"\n        data_bag_key = \"storm\"\n        license_file = \"stormforwarder_XXXXXXXX.spl\"\n        \n        Chef::Config.from_file(\"#{ENV['HOME']}/.chef/knife.rb\")\n        c = Chef::DataBagItem.load(data_bag, data_bag_key)\n        \n        contents = [File.open(license_file, \"rb\") {|io| io.read}].pack(\"m\")\n        c['data'] = contents\n        c['filename'] = license_file\n        \n        c.save\n3. You'll probably want to check-in your databag into your SCM\n        \n        knife data bag show licenses storm -Fj > data_bags/licenses/storm.json\n\nIf you need to get the credentials out of the databag and into an actual file (note: the cookbook takes care of this for you), you can run this command in `irb`\n    \n    require 'base64'\n    require 'chef'\n    \n    data_bag     = \"licenses\"\n    data_bag_key = \"storm\"\n    \n    Chef::Config.from_file(\"#{ENV['HOME']}/.chef/knife.rb\")\n    c = Chef::DataBagItem.load(data_bag, data_bag_key)\n    \n    File.open(c['filename'], \"wb\") do |file|\n      file.write(c['data'].unpack('m').first)\n    end\n\n\nChanges\n=======\n\n* v0.0.1 - Initial Release\n\n\nCurrent Bugs\n============\n\n* Very beta - only tested in Ubuntu 12.04\n\n\nRequirements\n============\n\n## Platform:\n\n* Ubuntu, Debian, RedHat, CentOS, Fedora\n\n- This cookbook has only been tested thoroughly with Ubuntu\n\n\nAttributes\n==========\n\nSee `attributes/default.rb` for default values.\n\n* `node['splunkstorm']['cookbook_name']` - The name of the directory in which the cookbook runs.\n* `node['splunkstorm']['forwarder_home']` - The directory in which to install the Splunk Forwarder\n* `node['splunkstorm']['auth']` - The default admin password to use instead of splunks \"changeme\"\n* `node['splunkstorm']['forwarder_root']` - The base URL that splunk uses to download release files for Splunk Forwarder\n* `node['splunkstorm']['forwarder_version']` - The specific version of Splunk Forwarder to download\n* `node['splunkstorm']['forwarder_build]` - The specific build number of Splunk Forwarder to download\n\n\nRecipes\n=======\n\nsplunkstorm\n-----\n\nInstalls Splunk Forwarder for Storm.\n- You need to setup data bags with your Splunk Storm credentials. Check out this gist for details: https://gist.github.com/3384786\n\nUsage\n=====\n\n## Splunk Storm Forwarder Install:\n\nThis will install the Splunk Forwarder:\n\n    recipe[splunkstorm]\n\n\nResources and Providers\n=======================\n\nTo add and remove monitors you can use the `splunkstorm_monitor` provider:\n    \n    include_recipe \"splunkstorm\"\n    \n    # monitor the log directory in Splunk Storm\n    splunkstorm_monitor \"/var/log\" do\n      path \"/var/log/*.log\"\n      action :add\n    end\n    \n    # remove the log directory monitor in Splunk Storm\n    splunkstorm_monitor \"/var/log\" do\n      path \"/var/log/*.log\"\n      action :remove\n    end\n\n\n\nLicense and Author\n==================\n\nAuthor:: Aaron Wallis (<aaron.wallis@lexer.com.au>)\n\nCopyright 2012-2013, Lexer Pty Ltd.\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.",
+  "maintainer": "Aaron Wallis",
+  "maintainer_email": "aaron.wallis@lexer.com.au",
+  "license": "Apache 2.0",
+  "platforms": {
+    "redhat": ">= 0.0.0",
+    "centos": ">= 0.0.0",
+    "fedora": ">= 0.0.0",
+    "debian": ">= 0.0.0",
+    "ubuntu": ">= 0.0.0"
+  },
+  "dependencies": {
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+  },
+  "version": "0.0.3"
+}
