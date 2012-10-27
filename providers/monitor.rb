@@ -31,7 +31,8 @@ end
 
 action :add do
   if !already_monitors_path?(new_resource.path)
-    execute "#{node['splunkstorm']['forwarder_home']}/bin/splunk add monitor #{new_resource.path}" do
+    execute "splunk add monitor #{new_resource.path}" do
+      command "#{node['splunkstorm']['forwarder_home']}/bin/splunk add monitor #{new_resource.path} -auth #{node['splunkstorm']['auth']}"
       action :run
     end
   end
@@ -39,7 +40,8 @@ end
 
 action :remove do
   if already_monitors_path?(new_resource.path)
-    execute "#{node['splunkstorm']['forwarder_home']}/bin/splunk remove monitor #{new_resource.path}" do
+    execute "splunk remove monitor #{new_resource.path}" do
+      command "#{node['splunkstorm']['forwarder_home']}/bin/splunk remove monitor #{new_resource.path} -auth #{node['splunkstorm']['auth']}"
       action :run
     end
   end
