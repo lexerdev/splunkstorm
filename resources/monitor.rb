@@ -19,3 +19,4 @@
 
 actions :add, :remove
 attribute :path, :kind_of => String
+attribute :params, :kind_of => Hash

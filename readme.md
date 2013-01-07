@@ -8,45 +8,33 @@ You probably won't want to have this file floating around in your cookbook unenc
 
 To do that, you'll need to:
 
-1. Create the data bag using knife (or whatever process you usually take)
+1. Create the data bag using knife
         
         knife data bag create licenses storm --secret-file ~/.chef/encrypted_data_bag_secret
-2. Open `irb` and run the following script (make sure you update the variables to suit your setup)
-        
+2. Open `irb` from the directory containing your project certificate, and run the following script (make sure you update the variables to suit your setup)
+
         require 'base64'
         require 'chef'
-        
+
         data_bag     = "licenses"
         data_bag_key = "storm"
         license_file = "stormforwarder_XXXXXXXX.spl"
-        
-        Chef::Config.from_file("#{ENV['HOME']}/.chef/knife.rb")
-        c = Chef::DataBagItem.load(data_bag, data_bag_key)
-        
-        contents = [File.open(license_file, "rb") {|io| io.read}].pack("m")
-        c['data'] = contents
-        c['filename'] = license_file
-        
-        c.save
+         
+        data = [File.open(license_file, "rb") {|io| io.read}].pack("m")
+3. Copy the string output by `irb`, and run the following command to edit the data bag, pasting the string into a JSON "data" field, and the license filename into a "filename" field.
+
+        knife data bag edit licenses storm --secret-file ~/.chef/encrypted_data_bag_secret
+
+4. Run `knife data bag show licenses storm --secret-file ~/.chef/encrypted_data_bag_secret` and confirm your data bag looks like something like this:
+
+        {
+            "id": "storm",
+            "filename": "stormforwarder_XXXXXXXX.spl",
+            "data": "string created in irb"
+        }
 3. You'll probably want to check-in your databag into your SCM
         
         knife data bag show licenses storm -Fj > data_bags/licenses/storm.json
-
-If you need to get the credentials out of the databag and into an actual file (note: the cookbook takes care of this for you), you can run this command in `irb`
-    
-    require 'base64'
-    require 'chef'
-    
-    data_bag     = "licenses"
-    data_bag_key = "storm"
-    
-    Chef::Config.from_file("#{ENV['HOME']}/.chef/knife.rb")
-    c = Chef::DataBagItem.load(data_bag, data_bag_key)
-    
-    File.open(c['filename'], "wb") do |file|
-      file.write(c['data'].unpack('m').first)
-    end
-
 
 Changes
 =======
@@ -109,9 +97,10 @@ To add and remove monitors you can use the `splunkstorm_monitor` provider:
     
     include_recipe "splunkstorm"
     
-    # monitor the log directory in Splunk Storm
+    # monitor the log directory in Splunk Storm, with an additional parameter setting source type
     splunkstorm_monitor "/var/log" do
       path "/var/log/*.log"
+      params "sourcetype" => "access_combined"
       action :add
     end
     
