@@ -98,9 +98,10 @@ To add and remove monitors you can use the `splunkstorm_monitor` provider:
     
     include_recipe "splunkstorm"
     
-    # monitor the log directory in Splunk Storm
+    # monitor the log directory in Splunk Storm, with an additional parameter setting source type
     splunkstorm_monitor "/var/log" do
       path "/var/log/*.log"
+      params "sourcetype" => "access_combined"
       action :add
     end
     
