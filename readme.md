@@ -21,7 +21,6 @@ To do that, you'll need to:
         license_file = "stormforwarder_XXXXXXXX.spl"
          
         data = [File.open(license_file, "rb") {|io| io.read}].pack("m")
-        data.gsub(/\n/, "\n")
 3. Copy the string output by `irb`, and run the following command to edit the data bag, pasting the string into a JSON "data" field, and the license filename into a "filename" field.
 
         knife data bag edit licenses storm --secret-file ~/.chef/encrypted_data_bag_secret
@@ -30,8 +29,8 @@ To do that, you'll need to:
 
         {
             "id": "storm",
-            "filename": {license file name},
-            "data": {string created in irb}
+            "filename": "stormforwarder_XXXXXXXX.spl",
+            "data": "string created in irb"
         }
 3. You'll probably want to check-in your databag into your SCM
         
