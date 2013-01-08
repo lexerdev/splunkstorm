@@ -73,7 +73,7 @@ service "splunk" do
   supports :status => true, :start => true, :stop => true, :restart => true
 end
 
-license_details = Chef::DataBagItem.load(node['splunkstorm']['license_databag'], node['splunkstorm']['license_databag_item'])
+license_details = Chef::EncryptedDataBagItem.load(node['splunkstorm']['license_databag'], node['splunkstorm']['license_databag_item'])
 ruby_block "create storm certificates" do
   block do
     File.open("#{node['splunkstorm']['forwarder_home']}/#{license_details['filename']}", "wb") do |file|
