@@ -58,7 +58,7 @@ end
 
 execute "#{splunk_cmd} start --accept-license --answer-yes" do
   not_if do
-    `#{splunk_cmd} status | grep 'splunkd'`.chomp! =~ /^splunkd is running/
+    File.exists?("#{node['splunkstorm']['forwarder_root']}/var/run/splunk/splunkd.pid")
   end
 end
 
