@@ -58,7 +58,7 @@ end
 
 execute "#{splunk_cmd} start --accept-license --answer-yes" do
   not_if do
-    `#{splunk_cmd} status | grep 'splunkd'`.chomp! =~ /^splunkd is running/
+    `#{splunk_cmd} status --accept-license | grep 'splunkd'`.chomp! =~ /^splunkd is running/
   end
 end
 
