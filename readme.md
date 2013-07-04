@@ -1,3 +1,9 @@
+Note:
+===========
+
+This cookbook is no longer maintaned by us as we no longer use Splunk Storm.
+Best to look at one of the more up-to-date forks instead.
+
 Description
 ===========
 
