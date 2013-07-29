@@ -26,14 +26,14 @@ splunk_cmd = "#{node['splunkstorm']['forwarder_home']}/bin/splunk"
 splunk_package_version = "splunkforwarder-#{node['splunkstorm']['forwarder_version']}-#{node['splunkstorm']['forwarder_build']}"
 
 splunk_file = splunk_package_version + 
-  case node['platform']
-  when "centos","redhat","fedora"
+  case node['platform_family']
+  when "rhel"
     if node['kernel']['machine'] == "x86_64"
       "-linux-2.6-x86_64.rpm"
     else
       ".i386.rpm"
     end
-  when "debian","ubuntu"
+  when "debian"
     if node['kernel']['machine'] == "x86_64"
       "-linux-2.6-amd64.deb"
     else
@@ -48,10 +48,10 @@ end
 
 package splunk_package_version do
   source "/opt/#{splunk_file}"
-  case node['platform']
-  when "centos","redhat","fedora"
+  case node['platform_family']
+  when "rhel"
     provider Chef::Provider::Package::Rpm
-  when "debian","ubuntu"
+  when "debian"
     provider Chef::Provider::Package::Dpkg
   end
 end
