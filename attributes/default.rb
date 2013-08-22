@@ -12,6 +12,9 @@ default['splunkstorm']['forwarder_root']       = "http://download.splunk.com/rel
 default['splunkstorm']['forwarder_version']    = "4.3.3"
 default['splunkstorm']['forwarder_build']      = "128297"
 
+# location of license file (to bypass databag lookup)
+default['splunkstorm']['license_file']         = nil
+
 # Splunk License Data Bag
 default['splunkstorm']['license_databag']      = "licenses"
 default['splunkstorm']['license_databag_item'] = "storm"
