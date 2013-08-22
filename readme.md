@@ -1,7 +1,7 @@
 Note:
 ===========
 
-This cookbook is no longer maintaned by us as we no longer use Splunk Storm.
+This cookbook is no longer maintained by us as we no longer use Splunk Storm.
 Best to look at one of the more up-to-date forks instead.
 
 Description
@@ -10,9 +10,16 @@ Description
 This little Chef Cookbook provides recipes and definitions to install Splunk Forwarders and setup monitors for Splunk Storm.
 
 As you know, Splunk Storm uses a proprietary credentials file to setup access to the Splunk Storm servers/account.
-You probably won't want to have this file floating around in your cookbook unencrypted, so we're going to stuff the contents of the credentials file into a Secure Databag.
 
-To do that, you'll need to:
+There are two ways to point at the credentials file:
+
+## Specify a File Location (useful for a chef solo env (e.g. OpsWorks))
+
+1. Get the spl file to a known location on the file system (from s3, mounted network drive, etc)
+
+2. Specify the path to the spl file in `node['splunkstorm']['license_file']`
+
+## Use a Secure Data Bag (good solution for hosted or private chef)
 
 1. Create the data bag using knife
         
@@ -45,6 +52,7 @@ To do that, you'll need to:
 Changes
 =======
 
+* v0.0.2 - Add ability to specify license file location
 * v0.0.1 - Initial Release
 
 
@@ -75,7 +83,7 @@ See `attributes/default.rb` for default values.
 * `node['splunkstorm']['forwarder_root']` - The base URL that splunk uses to download release files for Splunk Forwarder
 * `node['splunkstorm']['forwarder_version']` - The specific version of Splunk Forwarder to download
 * `node['splunkstorm']['forwarder_build]` - The specific build number of Splunk Forwarder to download
-
+* `node['splunkstorm']['license_file']` - [optional] absolute path to spl credentials file
 
 Recipes
 =======

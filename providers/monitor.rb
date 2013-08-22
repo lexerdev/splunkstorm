@@ -31,7 +31,7 @@ end
 
 action :add do
   additional_params = new_resource.params.map{|k,v| "-#{k} #{v}"}.join(' ')
-  if !already_monitors_path?(new_resource.path)
+  unless already_monitors_path?(new_resource.path)
     execute "splunk add monitor #{new_resource.path}" do
       command "#{node['splunkstorm']['forwarder_home']}/bin/splunk add monitor #{new_resource.path} -auth #{node['splunkstorm']['auth']} #{additional_params}"
       action :run
